@@ -1,0 +1,16 @@
+{
+    "paths" : [
+        {
+            "path": "/go",
+            "url": "https://go.dev/"
+        },
+        {
+            "path": "/go_pkg",
+            "url": "https://pkg.go.dev/"
+        },
+        {
+            "path": "/path3",
+            "url": "http://localhost:8080/redirections/path3"
+        }
+    ]
+}
