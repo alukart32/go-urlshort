@@ -1,15 +1,14 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
 
-type Path struct {
-	Path string `json:"path" yaml:"path"`
-	Url  string `json:"url" yaml:"url"`
-}
+	"alukart32.com/urlshort/internal/models"
+)
 
 // Config is a set of all possible configurations for redirecting an http request.
 type Config struct {
-	Redirections []Path `json:"paths" yaml:"paths,flow"`
+	Redirections []models.Redirect `json:"paths" yaml:"paths,flow"`
 }
 
 // PathsToMap converts the slice c.Paths to map[Path]Url.
@@ -25,13 +24,13 @@ func (c *Config) PathsToMap() map[string]string {
 }
 
 // AppendPath add a new value to the variable paths.
-func (c *Config) AddPath(p string, u string) {
-	newPath := Path{
-		Path: p,
-		Url:  u,
+func (c *Config) AddRedirect(path string, url string) {
+	newPath := models.Redirect{
+		Path: path,
+		Url:  url,
 	}
 	if c.Redirections == nil {
-		c.Redirections = make([]Path, 0)
+		c.Redirections = make([]models.Redirect, 1)
 	}
 	c.Redirections = append(c.Redirections, newPath)
 }
