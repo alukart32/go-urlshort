@@ -4,33 +4,33 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"sync"
 
 	_ "github.com/lib/pq"
 )
 
+const DRIVER = "postgres"
+
 // db connection pool
-var db *sql.DB
+var (
+	db   *sql.DB
+	once sync.Once
+)
 
 // GetDB returns a new sql.DB if it was not installed earlier,
 // otherwise it returns an existing instance. An error occurs
 // if the database connection was initialized.
-func GetDB(cfg string) (*sql.DB, error) {
-	if db == nil {
-		return initDB("postgres", cfg)
-	}
-	return db, nil
-}
+func GetDB(cfg string) (_ *sql.DB, err error) {
+	once.Do(func() {
+		log.Printf("init the new db connection pool...")
+		db, err = sql.Open(DRIVER, cfg)
+		if err != nil {
+			err = fmt.Errorf("%s database open error %w", DRIVER, err)
+		}
 
-func initDB(driver, cfg string) (*sql.DB, error) {
-	log.Printf("init the new db connection pool...")
-	db, err := sql.Open(driver, cfg)
-	if err != nil {
-		return nil, fmt.Errorf("%s database open error %w", driver, err)
-	}
-
-	if err = db.Ping(); err != nil {
-		return nil, err
-	}
-	log.Printf("db connection pool was created...")
+		if err = db.Ping(); err == nil {
+			log.Printf("db connection pool was created...")
+		}
+	})
 	return db, nil
 }
